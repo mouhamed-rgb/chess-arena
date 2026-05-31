@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chess Arena | NEXUS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Cairo:wght@300;400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ══ Ambient Background ══════════════════════════════════════════════ -->
+  <div class="bg-grid"></div>
+  <div class="ambient-orb orb-1"></div>
+  <div class="ambient-orb orb-2"></div>
+  <div class="ambient-orb orb-3"></div>
+
+  <!-- ══ LOBBY SCREEN ════════════════════════════════════════════════════ -->
+  <div id="lobby-screen" class="screen active">
+    <div class="lobby-container">
+      <div class="logo-wrap">
+        <span class="logo-icon">♛</span>
+        <h1 class="logo-title" data-text="Chess Arena">Chess Arena</h1>
+        <p class="logo-sub">NEXUS · ساحة الشطرنج الأونلاين</p>
+        <div class="logo-status">
+          <div class="status-dot"></div>
+          <span class="status-label">SYSTEM ONLINE</span>
+          <span class="status-label" style="color:var(--text-dim)">|</span>
+          <span class="status-label">SECURE CONNECTION</span>
+          <div class="status-dot"></div>
+        </div>
+      </div>
+
+      <div class="lobby-cards">
+        <!-- Create Room -->
+        <div class="lobby-card" id="card-create">
+          <div class="card-glow"></div>
+          <div class="card-header-line"></div>
+          <div class="card-icon">⚔️</div>
+          <h2>إنشاء غرفة جديدة</h2>
+          <p>أنشئ غرفة تحدي وشارك الرمز مع صديقك للبدء</p>
+          <button class="btn btn-primary" id="btn-create">إنشاء الغرفة</button>
+        </div>
+
+        <!-- Join Room -->
+        <div class="lobby-card" id="card-join">
+          <div class="card-glow card-glow--gold"></div>
+          <div class="card-header-line card-header-line--gold"></div>
+          <div class="card-icon">🎯</div>
+          <h2>الانضمام لغرفة</h2>
+          <p>أدخل رمز الغرفة للانضمام للمباراة</p>
+          <div class="input-group">
+            <input
+              type="text"
+              id="room-input"
+              placeholder="أدخل رمز الغرفة"
+              maxlength="6"
+              autocomplete="off"
+            />
+            <button class="btn btn-gold" id="btn-join">دخول</button>
+          </div>
+          <div id="join-error" class="error-msg"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ WAITING SCREEN ══════════════════════════════════════════════════ -->
+  <div id="waiting-screen" class="screen">
+    <div class="waiting-container">
+      <div class="waiting-icon">♟</div>
+      <h2>في انتظار منافسك...</h2>
+      <p class="waiting-sub">شارك هذا الرمز أو الرابط مع صديقك</p>
+
+      <div class="room-code-box">
+        <span class="room-code-label">ROOM CODE</span>
+        <span id="display-room-id" class="room-code-value">——</span>
+        <button class="btn-copy" id="btn-copy-code" title="نسخ الرمز">📋</button>
+      </div>
+
+      <div class="room-link-box">
+        <input type="text" id="room-link" readonly />
+        <button class="btn btn-gold btn-sm" id="btn-copy-link">نسخ الرابط</button>
+      </div>
+
+      <div class="waiting-pulse">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ GAME SCREEN ══════════════════════════════════════════════════════ -->
+  <div id="game-screen" class="screen">
+
+    <!-- Top Bar -->
+    <header class="game-header">
+      <div class="player-info player-info--top" id="opponent-info">
+        <div class="player-avatar" id="opponent-avatar">♞</div>
+        <div class="player-details">
+          <span class="player-name" id="opponent-name">المنافس</span>
+          <span class="player-color-badge" id="opponent-badge"></span>
+        </div>
+        <div class="turn-indicator" id="opponent-turn-dot"></div>
+      </div>
+
+      <div class="game-status-bar">
+        <span id="status-text">جاري التحميل...</span>
+        <span class="room-chip" id="room-chip">—</span>
+      </div>
+
+      <div class="player-info player-info--bottom" id="my-info">
+        <div class="turn-indicator" id="my-turn-dot"></div>
+        <div class="player-details">
+          <span class="player-name" id="my-name">أنت</span>
+          <span class="player-color-badge" id="my-badge"></span>
+        </div>
+        <div class="player-avatar" id="my-avatar">♛</div>
+      </div>
+    </header>
+
+    <!-- Main Game Area -->
+    <main class="game-main">
+
+      <!-- Captured Pieces (Opponent) -->
+      <div class="captured-row" id="captured-by-me"></div>
+
+      <!-- Board Wrapper -->
+      <div class="board-wrapper">
+        <div class="rank-labels rank-labels--left" id="rank-labels-left"></div>
+        <div id="chess-board" class="chess-board"></div>
+        <div class="rank-labels rank-labels--right" id="rank-labels-right"></div>
+      </div>
+      <div class="file-labels" id="file-labels"></div>
+
+      <!-- Captured Pieces (Mine) -->
+      <div class="captured-row" id="captured-by-opponent"></div>
+
+      <!-- Quick Chat -->
+      <div class="chat-panel">
+        <div class="chat-header">// QUICK_COMM · دردشة سريعة</div>
+        <div class="chat-messages" id="chat-messages"></div>
+        <div class="quick-chat-buttons" id="quick-chat-btns"></div>
+      </div>
+    </main>
+
+    <!-- Resign Button -->
+    <button class="btn-resign" id="btn-resign">🏳 RESIGN</button>
+  </div>
+
+  <!-- ══ PROMOTION MODAL ══════════════════════════════════════════════════ -->
+  <div id="promotion-modal" class="modal-overlay hidden">
+    <div class="modal">
+      <h3>// PROMOTE_PAWN · اختر القطعة</h3>
+      <div class="promotion-choices" id="promotion-choices"></div>
+    </div>
+  </div>
+
+  <!-- ══ RESULT MODAL ═════════════════════════════════════════════════════ -->
+  <div id="result-modal" class="modal-overlay hidden">
+    <div class="modal modal--result">
+      <div class="result-trophy" id="result-trophy">🏆</div>
+      <h2 class="result-title" id="result-title">GAME OVER</h2>
+      <p class="result-sub" id="result-sub"></p>
+      <div class="result-buttons">
+        <button class="btn btn-primary" id="btn-rematch">⚔️ REMATCH</button>
+        <button class="btn btn-ghost" id="btn-lobby">🏠 LOBBY</button>
+      </div>
+      <div id="rematch-status" class="rematch-status"></div>
+    </div>
+  </div>
+
+  <!-- ══ TOAST CONTAINER ══════════════════════════════════════════════════ -->
+  <div id="toast-container"></div>
+
+  <!-- ══ Scripts ══════════════════════════════════════════════════════════ -->
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+  <script src="client.js"></script>
+</body>
+</html>
